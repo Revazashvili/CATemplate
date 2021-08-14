@@ -1,27 +1,25 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Application.Commands.WeatherForecasts;
+using Application.Common.Models;
+using Application.Queries.WeatherForecasts;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace API.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class WeatherForecastController : ControllerBase
+    public class WeatherForecastController : WrapperController
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
+        public WeatherForecastController(IServiceProvider provider) : base(provider) { }
 
-        private readonly ILogger<WeatherForecastController> _logger;
+        [HttpGet]
+        public async Task<IResponse<IReadOnlyList<WeatherForecastDto>>> Get(CancellationToken cancellationToken) =>
+            await Mediator.Send(new GetWeatherForecastQuery(),cancellationToken);
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
-        {
-            _logger = logger;
-        }
+        [HttpPost]
+        public async Task<IResponse<int>> Create([FromBody] CreateWeatherForecastCommand command,
+            CancellationToken cancellationToken) => await Mediator.Send(command, cancellationToken);
         
     }
 }
