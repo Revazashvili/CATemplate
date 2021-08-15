@@ -15,7 +15,6 @@ namespace Application.Queries.WeatherForecasts
     public class GetWeatherForecastQueryHandler : IHandlerWrapper<GetWeatherForecastQuery,IReadOnlyList<WeatherForecastDto>>
     {
         private readonly IApplicationDbContext _context;
-
         public GetWeatherForecastQueryHandler(IApplicationDbContext context) { _context = context; }
 
         public async Task<IResponse<IReadOnlyList<WeatherForecastDto>>> Handle(GetWeatherForecastQuery request, CancellationToken cancellationToken)

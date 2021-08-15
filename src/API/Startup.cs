@@ -24,7 +24,7 @@ namespace API
         }
 
         private IConfiguration Configuration { get; }
-
+        
         private const string ApiCorsPolicy = "APICorsPolicy";
         public void ConfigureServices(IServiceCollection services)
         {
@@ -43,8 +43,7 @@ namespace API
             services.AddControllers().AddFluentValidation(options => options.AutomaticValidationEnabled = true);;
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "API", Version = "v1"}); });
         }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env,ILogger<Startup> logger)
         {
             if (env.IsDevelopment())
@@ -55,7 +54,6 @@ namespace API
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"));
             
-            //TODO: this one should be in Application
             app.UseExceptionHandler(builder =>
             {
                 builder.Run(async context =>

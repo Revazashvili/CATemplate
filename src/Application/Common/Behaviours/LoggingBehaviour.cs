@@ -16,11 +16,10 @@ namespace Application.Common.Behaviours
 
         public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
         {
-            var requestName = typeof(TRequest).Name;
-            _logger.LogInformation("Request: {Name} {@request}",requestName,request);
-
-            return await next();
-            //TODO: need to implement response logging
+            _logger.LogTrace("Request: {@request}",request);
+            var response = await next();
+            _logger.LogTrace("Response: {@response}",response);
+            return response;
         }
     }
 }
