@@ -1,5 +1,3 @@
-using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
@@ -16,18 +14,10 @@ namespace API
             var host = CreateHostBuilder(args).Build();
             using var scope = host.Services.CreateScope();
             var serviceProvider = scope.ServiceProvider;
-            try
+            var context = serviceProvider.GetService<ApplicationDbContext>();
+            if (context!.Database.IsSqlServer())
             {
-                var context = serviceProvider.GetService<ApplicationDbContext>();
-                if (context!.Database.IsSqlServer())
-                {
-                    await context.Database.MigrateAsync();
-                }
-            }
-            catch (Exception exception)
-            {
-                //TODO:log error
-                throw;
+                await context.Database.MigrateAsync();
             }
 
             await host.RunAsync();

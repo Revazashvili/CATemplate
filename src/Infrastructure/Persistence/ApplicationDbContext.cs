@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Common.Interfaces;
@@ -21,16 +22,24 @@ namespace Infrastructure.Persistence
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        entry.Entity.CreatedBy = AppDomain.CurrentDomain.FriendlyName;
+                        entry.Entity.CreatedBy = "API";
                         entry.Entity.Created = DateTime.Now;
+                        entry.Entity.LastModified = DateTime.Now;
+                        entry.Entity.LastModifiedBy = "API";
                         break;
                     case EntityState.Modified:
-                        entry.Entity.LastModifiedBy = AppDomain.CurrentDomain.FriendlyName;
                         entry.Entity.LastModified = DateTime.Now;
+                        entry.Entity.LastModifiedBy = "API";
                         break;
                 }
             }
             return await base.SaveChangesAsync(cancellationToken);
+        }
+        
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+            base.OnModelCreating(builder);
         }
     }
 }

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Common.Behaviours
 {
-    public class TaskCanceledExceptionBehaviour<TRequest,TResponse> : IPipelineBehavior<TRequest,TResponse>
+    public class TaskCanceledExceptionBehaviour<TRequest,TResponse> : IPipelineBehavior<TRequest,TResponse> where TRequest : class
     {
         private readonly ILogger<TRequest> _logger;
 
@@ -25,7 +25,7 @@ namespace Application.Common.Behaviours
             {
                 var requestName = typeof(TRequest).Name;
                 _logger.LogError(taskCanceledException, "Request: Task Canceled Exception for Request {Name} {@Request}", 
-                    requestName, Response.Fail("Task Canceled Exception",request));
+                    requestName, Response.Fail<string>($"Task Canceled Exception: {request}"));
                 throw;
             }
         }
