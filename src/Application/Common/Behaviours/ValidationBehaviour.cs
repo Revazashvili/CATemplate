@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -7,7 +8,7 @@ using MediatR;
 
 namespace Application.Common.Behaviours
 {
-    public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : class
+    public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     {
         private readonly IEnumerable<IValidator<TRequest>> _validators;
 
@@ -20,14 +21,17 @@ namespace Application.Common.Behaviours
         {
             if (_validators.Any())
             {
-                //TODO: must be formated as a IResponse<T>
+                //TODO: must return all error message not only one
                 var context = new ValidationContext<TRequest>(request);
 
                 var validationResults = await Task.WhenAll(_validators.Select(v => v.ValidateAsync(context, cancellationToken)));
-                var failures = validationResults.SelectMany(r => r.Errors).Where(f => f != null).ToList();
+                var errorMessage = validationResults
+                    .SelectMany(r => r.Errors)
+                    .Where(f => f != null)
+                    .Select(x=>x.ErrorMessage)
+                    .FirstOrDefault();
 
-                if (failures.Count != 0)
-                    throw new ValidationException(failures);
+                if (!string.IsNullOrEmpty(errorMessage)) throw new Exception(errorMessage);
             }
             return await next();
         }

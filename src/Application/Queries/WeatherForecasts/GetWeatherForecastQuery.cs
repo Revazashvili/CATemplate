@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Queries.WeatherForecasts
 {
-    public record GetWeatherForecastQuery : IRequestWrapper<IReadOnlyList<WeatherForecastDto>>{}
+    public record GetWeatherForecastQuery(int id) : IRequestWrapper<IReadOnlyList<WeatherForecastDto>>{}
     
     public class GetWeatherForecastQueryHandler : IHandlerWrapper<GetWeatherForecastQuery,IReadOnlyList<WeatherForecastDto>>
     {

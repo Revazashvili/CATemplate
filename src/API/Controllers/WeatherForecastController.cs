@@ -15,7 +15,7 @@ namespace API.Controllers
 
         [HttpGet]
         public async Task<IResponse<IReadOnlyList<WeatherForecastDto>>> Get(CancellationToken cancellationToken) =>
-            await Mediator.Send(new GetWeatherForecastQuery(),cancellationToken);
+            await Mediator.Send(new GetWeatherForecastQuery(0),cancellationToken);
 
         [HttpPost]
         public async Task<IResponse<int>> Create([FromBody] CreateWeatherForecastCommand command,
