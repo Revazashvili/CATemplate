@@ -41,7 +41,11 @@ namespace API
             services.AddApplication();
             
             services.AddControllers().AddFluentValidation(options => options.AutomaticValidationEnabled = true);;
-            services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "API", Version = "v1"}); });
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo {Title = "API", Version = "v1"});
+                c.EnableAnnotations();
+            });
         }
         
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env,ILogger<Startup> logger)
