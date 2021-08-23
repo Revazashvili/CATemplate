@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
 using API.Routes;
@@ -28,8 +29,8 @@ namespace API.Endpoints.WeatherForecast
             Tags = new []{ "WeatherForecast" })]
         [SwaggerResponse(StatusCodes.Status200OK,"All Weather Forecast Retrieved From Database.",typeof(IResponse<IReadOnlyList<GetWeatherForecastDto>>))]
         [SwaggerResponse(StatusCodes.Status400BadRequest,"No Weather Forecast Were Found",typeof(IResponse<IReadOnlyList<GetWeatherForecastDto>>))]
-        [Produces("application/json")]
-        [Consumes("application/json")]
+        [Produces(MediaTypeNames.Application.Json)]
+        [Consumes(MediaTypeNames.Application.Json)]
         public override async Task<ActionResult<IResponse<IReadOnlyList<GetWeatherForecastDto>>>> HandleAsync(
             CancellationToken cancellationToken = new())
         {

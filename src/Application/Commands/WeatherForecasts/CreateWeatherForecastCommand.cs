@@ -1,4 +1,3 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Common.DTOs.WeatherForecast;
@@ -10,9 +9,9 @@ using MapsterMapper;
 
 namespace Application.Commands.WeatherForecasts
 {
-    public record CreateWeatherForecastCommand(CreateWeatherForecastDto CreateWeatherForecastDto) : IRequestWrapper<int>{}
+    public record CreateWeatherForecastCommand(CreateWeatherForecastDto CreateWeatherForecastDto) : IRequestWrapper<long>{}
     
-    public class CreateWeatherForecastCommandHandler : IHandlerWrapper<CreateWeatherForecastCommand,int>
+    public class CreateWeatherForecastCommandHandler : IHandlerWrapper<CreateWeatherForecastCommand,long>
     {
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
@@ -20,14 +19,14 @@ namespace Application.Commands.WeatherForecasts
         public CreateWeatherForecastCommandHandler(IApplicationDbContext context, IMapper mapper) =>
             (_context, _mapper) = (context, mapper);
 
-        public async Task<IResponse<int>> Handle(CreateWeatherForecastCommand request, CancellationToken cancellationToken)
+        public async Task<IResponse<long>> Handle(CreateWeatherForecastCommand request, CancellationToken cancellationToken)
         {
             var weatherForecast = _mapper.Map<WeatherForecast>(request.CreateWeatherForecastDto);
             await _context.WeatherForecasts.AddAsync(weatherForecast, cancellationToken);
-            var insertedRowCount = await _context.SaveChangesAsync(cancellationToken);
-            return insertedRowCount > 0
-                ? Response.Success(insertedRowCount)
-                : Response.Fail<int>("Can't insert record");
+            await _context.SaveChangesAsync(cancellationToken);
+            return weatherForecast.Id > 0
+                ? Response.Success(weatherForecast.Id)
+                : Response.Fail<long>("Can't insert record");
         }
     }
     

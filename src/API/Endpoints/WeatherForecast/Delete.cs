@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
 using API.Routes;
@@ -27,8 +28,8 @@ namespace API.Endpoints.WeatherForecast
             Tags = new []{ "WeatherForecast" })]
         [SwaggerResponse(StatusCodes.Status200OK,"Weather Forecast Deleted Successfully.",typeof(IResponse<int>))]
         [SwaggerResponse(StatusCodes.Status400BadRequest,"Error Occurred While Deleting Weather Forecast.",typeof(IResponse<int>))]
-        [Produces("application/json")]
-        [Consumes("application/json")]
+        [Produces(MediaTypeNames.Application.Json)]
+        [Consumes(MediaTypeNames.Application.Json)]
         public override async Task<ActionResult<IResponse<int>>> HandleAsync(
             [FromQuery,SwaggerParameter("Weather Forecast Id",Required = true)]int id,
             CancellationToken cancellationToken = new())
