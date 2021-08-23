@@ -6,8 +6,15 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Application
 {
+    /// <summary>
+    /// Extension class for <see cref="IServiceCollection"/> interface
+    /// </summary>
     public static class ServiceCollectionExtension
     {
+        /// <summary>
+        /// Injects application dependencies into dependency injection container
+        /// </summary>
+        /// <param name="services"><see cref="IServiceCollection"/> interface</param>
         public static void AddApplication(this IServiceCollection services)
         {
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
