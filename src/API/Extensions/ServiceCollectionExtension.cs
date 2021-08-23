@@ -16,7 +16,7 @@ namespace API.Extensions
         /// <param name="policyName">Policy Name</param>
         public static void ConfigureCors(this IServiceCollection services,IConfiguration configuration,string policyName)
         {
-            var cors = configuration.GetValue<string[]>("ApiCorsPolicy");
+            var cors = configuration.GetSection("Cors").Get<string[]>();
             services.AddCors(options => options.AddPolicy(policyName, builder =>
             {
                 builder.AllowAnyMethod()

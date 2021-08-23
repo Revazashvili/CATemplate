@@ -17,7 +17,8 @@ namespace API.Extensions
         /// Adds a exception handler to the pipeline
         /// </summary>
         /// <param name="app"><see cref="IApplicationBuilder"/> interface</param>
-        public static void AddExceptionHandler(this IApplicationBuilder app,ILogger logger)
+        public static void AddExceptionHandler<T>(this IApplicationBuilder app, ILogger<T> logger) 
+            where T : class
         {
             app.UseExceptionHandler(builder =>
             {
