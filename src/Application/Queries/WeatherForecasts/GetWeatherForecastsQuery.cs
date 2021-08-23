@@ -10,22 +10,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Queries.WeatherForecasts
 {
-    public record GetWeatherForecastsQuery : IRequestWrapper<IReadOnlyList<WeatherForecastDto>>{}
+    public record GetWeatherForecastsQuery : IRequestWrapper<IReadOnlyList<GetWeatherForecastDto>>{}
     
-    public class GetWeatherForecastsQueryHandler : IHandlerWrapper<GetWeatherForecastsQuery,IReadOnlyList<WeatherForecastDto>>
+    public class GetWeatherForecastsQueryHandler : IHandlerWrapper<GetWeatherForecastsQuery,IReadOnlyList<GetWeatherForecastDto>>
     {
         private readonly IApplicationDbContext _context;
         public GetWeatherForecastsQueryHandler(IApplicationDbContext context) { _context = context; }
 
-        public async Task<IResponse<IReadOnlyList<WeatherForecastDto>>> Handle(GetWeatherForecastsQuery request, CancellationToken cancellationToken)
+        public async Task<IResponse<IReadOnlyList<GetWeatherForecastDto>>> Handle(GetWeatherForecastsQuery request, CancellationToken cancellationToken)
         {
-            IReadOnlyList<WeatherForecastDto> weatherForecasts = await _context.WeatherForecasts
-                .Select(w => new WeatherForecastDto(w.Id, w.Date, w.TemperatureC, w.Summary))
+            IReadOnlyList<GetWeatherForecastDto> weatherForecasts = await _context.WeatherForecasts
+                .Select(w => new GetWeatherForecastDto(w.Id, w.Date, w.TemperatureC, w.Summary))
                 .ToListAsync(cancellationToken);
             
             return weatherForecasts.Any()
                 ? Response.Success(weatherForecasts)
-                : Response.Fail<IReadOnlyList<WeatherForecastDto>>("Can't find any record");
+                : Response.Fail<IReadOnlyList<GetWeatherForecastDto>>("Can't find any record");
         }
     }
 }

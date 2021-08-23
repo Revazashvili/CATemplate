@@ -7,15 +7,16 @@ using Application.Common.Models;
 using Application.Queries.WeatherForecasts;
 using Ardalis.ApiEndpoints;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace API.Endpoints.WeatherForecast
 {
-    [Route(ApiRoutes.WeatherForecast)]
+    [Route(WeatherForecastRoutes.Get)]
     public class Get : BaseAsyncEndpoint
         .WithoutRequest
-        .WithResponse<IResponse<IReadOnlyList<WeatherForecastDto>>>
+        .WithResponse<IResponse<IReadOnlyList<GetWeatherForecastDto>>>
     {
         private readonly IMediator _mediator;
         public Get(IMediator mediator) => _mediator = mediator;
@@ -25,13 +26,15 @@ namespace API.Endpoints.WeatherForecast
             Summary = "Returns all weather forecast",
             OperationId = "WeatherForecast.Get",
             Tags = new []{ "WeatherForecast" })]
-        public override async Task<ActionResult<IResponse<IReadOnlyList<WeatherForecastDto>>>> HandleAsync(
+        [SwaggerResponse(StatusCodes.Status200OK,"All Weather Forecast Retrieved From Database.",typeof(IResponse<IReadOnlyList<GetWeatherForecastDto>>))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest,"No Weather Forecast Were Found",typeof(IResponse<IReadOnlyList<GetWeatherForecastDto>>))]
+        [Produces("application/json")]
+        [Consumes("application/json")]
+        public override async Task<ActionResult<IResponse<IReadOnlyList<GetWeatherForecastDto>>>> HandleAsync(
             CancellationToken cancellationToken = new())
         {
             var result = await _mediator.Send(new GetWeatherForecastsQuery(),cancellationToken);
-            if (result.Succeeded)
-                return Ok(result);
-            return BadRequest(result);
+            return result.Succeeded ? Ok(result) : BadRequest(result);
         }
     }
 }

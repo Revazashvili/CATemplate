@@ -26,7 +26,7 @@ namespace Application.Commands.WeatherForecasts
             var deletedRowCount = await _context.SaveChangesAsync(cancellationToken);
             return deletedRowCount > 0
                 ? Response.Success<int>(deletedRowCount)
-                : Response.Fail<int>("Can't find weather forecast");
+                : Response.Fail<int>("Error Occurred While Deleting Weather Forecast");
         }
     }
 }

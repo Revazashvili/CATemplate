@@ -2,17 +2,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using API.Routes;
 using Application.Commands.WeatherForecasts;
+using Application.Common.DTOs.WeatherForecast;
 using Application.Common.Models;
 using Ardalis.ApiEndpoints;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace API.Endpoints.WeatherForecast
 {
-    [Route(ApiRoutes.WeatherForecast)]
+    [Route(WeatherForecastRoutes.Update)]
     public class Update : BaseAsyncEndpoint
-        .WithRequest<UpdateWeatherForecastCommand>
+        .WithRequest<UpdateWeatherForecastDto>
         .WithResponse<IResponse<int>>
     {
         private readonly IMediator _mediator;
@@ -20,16 +22,20 @@ namespace API.Endpoints.WeatherForecast
         public Update(IMediator mediator) => _mediator = mediator;
         
         [HttpPut]
-        [SwaggerOperation(Description = "Updates weather forecast",
-            Summary = "Updates weather forecast and returns affected row number",
+        [SwaggerOperation(Description = "Updates weather forecast and returns affected row number.",
+            Summary = "Updates weather forecast",
             OperationId = "WeatherForecast.Update",
             Tags = new []{ "WeatherForecast" })]
-        public override async Task<ActionResult<IResponse<int>>> HandleAsync([FromBody]UpdateWeatherForecastCommand request, 
+        [SwaggerResponse(StatusCodes.Status200OK,"Weather Forecast Updated Successfully.",typeof(IResponse<int>))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest,"Error Occurred While Updating Weather Forecast.",typeof(IResponse<int>))]
+        [Produces("application/json")]
+        [Consumes("application/json")]
+        public override async Task<ActionResult<IResponse<int>>> HandleAsync(
+            [FromBody,SwaggerRequestBody("Update Weather Forecast Payload")]UpdateWeatherForecastDto request, 
             CancellationToken cancellationToken = new())
         {
-            var result = await _mediator.Send(request, cancellationToken);
-            if (result.Succeeded) return Ok(result);
-            return BadRequest(result);
+            var result = await _mediator.Send(new UpdateWeatherForecastCommand(request), cancellationToken);
+            return result.Succeeded ? Ok(result) : BadRequest(result);
         }
     }
 }

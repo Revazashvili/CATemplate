@@ -1,5 +1,9 @@
+using System;
+using System.IO;
 using System.Net;
+using System.Reflection;
 using System.Text.Json;
+using API.Extensions;
 using Application;
 using Application.Common.Models;
 using FluentValidation.AspNetCore;
@@ -28,15 +32,7 @@ namespace API
         private const string ApiCorsPolicy = "APICorsPolicy";
         public void ConfigureServices(IServiceCollection services)
         {
-            var cors = Configuration.GetValue<string[]>("ApiCorsPolicy");
-            services.AddCors(options => options.AddPolicy(ApiCorsPolicy, builder =>
-            {
-                builder.AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .WithOrigins(cors)
-                    .AllowCredentials();
-            }));
-            
+            services.ConfigureCors(Configuration,ApiCorsPolicy);
             services.AddInfrastructure(Configuration);
             services.AddApplication();
             
@@ -55,24 +51,9 @@ namespace API
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseExceptionHandler(builder =>
-            {
-                builder.Run(async context =>
-                {
-                    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                    context.Response.ContentType = "application/json";
-
-                    var contextFeature = context.Features.Get<IExceptionHandlerPathFeature>();
-                    if (contextFeature != null)
-                    {
-                        var result = JsonSerializer.Serialize(Response.Fail<object>(
-                            $"{contextFeature.Error?.Message} {contextFeature.Error?.InnerException?.Message}"));
-                        logger.LogError("Error occured {error} {@result}",contextFeature.Error, result);
-                        await context.Response.WriteAsync(result);
-                    }
-                });
-            });
-
+            app.AddExceptionHandler(logger);
+            app.UseCors(ApiCorsPolicy);
+            
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"));
 

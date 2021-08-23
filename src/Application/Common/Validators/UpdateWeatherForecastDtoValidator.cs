@@ -1,14 +1,16 @@
 using System;
-using Application.Commands.WeatherForecasts;
 using Application.Common.DTOs.WeatherForecast;
 using FluentValidation;
 
 namespace Application.Common.Validators
 {
-    public class CreateWeatherForecastDtoValidator : AbstractValidator<CreateWeatherForecastDto>
+    public class UpdateWeatherForecastDtoValidator : AbstractValidator<UpdateWeatherForecastDto>
     {
-        public CreateWeatherForecastDtoValidator()
+        public UpdateWeatherForecastDtoValidator()
         {
+            RuleFor(x => x.Id)
+                .NotNull().NotEmpty().WithMessage("Id must be provided");
+            
             RuleFor(x => x.TemperatureC)
                 .NotNull().NotEmpty().WithMessage("TemperatureC must be provided");
 
