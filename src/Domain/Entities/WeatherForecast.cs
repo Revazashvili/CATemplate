@@ -5,13 +5,6 @@ namespace Domain.Entities
 {
     public class WeatherForecast : Auditable
     {
-        public WeatherForecast(DateTime date, int temperatureC, string summary)
-        {
-            Date = date;
-            TemperatureC = temperatureC;
-            Summary = summary;
-        }
-
         /// <summary>
         /// Gets or sets the primary key for this entity.
         /// </summary>

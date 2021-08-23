@@ -6,6 +6,7 @@ using Application.Common.Interfaces;
 using Application.Common.Models;
 using Application.Common.Wrappers;
 using Domain.Entities;
+using MapsterMapper;
 
 namespace Application.Commands.WeatherForecasts
 {
@@ -14,16 +15,14 @@ namespace Application.Commands.WeatherForecasts
     public class CreateWeatherForecastCommandHandler : IHandlerWrapper<CreateWeatherForecastCommand,int>
     {
         private readonly IApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-        public CreateWeatherForecastCommandHandler(IApplicationDbContext context)
-        {
-            _context = context;
-        }
+        public CreateWeatherForecastCommandHandler(IApplicationDbContext context, IMapper mapper) =>
+            (_context, _mapper) = (context, mapper);
 
         public async Task<IResponse<int>> Handle(CreateWeatherForecastCommand request, CancellationToken cancellationToken)
         {
-            var weatherForecast = new WeatherForecast(request.CreateWeatherForecastDto.Date,
-                request.CreateWeatherForecastDto.TemperatureC, request.CreateWeatherForecastDto.Summary);
+            var weatherForecast = _mapper.Map<WeatherForecast>(request.CreateWeatherForecastDto);
             await _context.WeatherForecasts.AddAsync(weatherForecast, cancellationToken);
             var insertedRowCount = await _context.SaveChangesAsync(cancellationToken);
             return insertedRowCount > 0

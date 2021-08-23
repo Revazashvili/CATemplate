@@ -6,6 +6,8 @@ using Application.Common.DTOs.WeatherForecast;
 using Application.Common.Interfaces;
 using Application.Common.Models;
 using Application.Common.Wrappers;
+using Mapster;
+using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Queries.WeatherForecasts
@@ -15,12 +17,15 @@ namespace Application.Queries.WeatherForecasts
     public class GetWeatherForecastsQueryHandler : IHandlerWrapper<GetWeatherForecastsQuery,IReadOnlyList<GetWeatherForecastDto>>
     {
         private readonly IApplicationDbContext _context;
-        public GetWeatherForecastsQueryHandler(IApplicationDbContext context) { _context = context; }
+        private readonly IMapper _mapper;
+
+        public GetWeatherForecastsQueryHandler(IApplicationDbContext context, IMapper mapper) =>
+            (_context, _mapper) = (context, mapper);
 
         public async Task<IResponse<IReadOnlyList<GetWeatherForecastDto>>> Handle(GetWeatherForecastsQuery request, CancellationToken cancellationToken)
         {
             IReadOnlyList<GetWeatherForecastDto> weatherForecasts = await _context.WeatherForecasts
-                .Select(w => new GetWeatherForecastDto(w.Id, w.Date, w.TemperatureC, w.Summary))
+                .ProjectToType<GetWeatherForecastDto>()
                 .ToListAsync(cancellationToken);
             
             return weatherForecasts.Any()
