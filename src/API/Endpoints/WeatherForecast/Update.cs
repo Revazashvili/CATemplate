@@ -35,8 +35,7 @@ namespace API.Endpoints.WeatherForecast
             [FromBody,SwaggerRequestBody("Update Weather Forecast Payload")]UpdateWeatherForecastDto request, 
             CancellationToken cancellationToken = new())
         {
-            var result = await _mediator.Send(new UpdateWeatherForecastCommand(request), cancellationToken);
-            return result.Succeeded ? Ok(result) : BadRequest(result);
+            return Ok(await _mediator.Send(new UpdateWeatherForecastCommand(request), cancellationToken));
         }
     }
 }

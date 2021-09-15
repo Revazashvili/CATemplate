@@ -34,8 +34,7 @@ namespace API.Endpoints.WeatherForecast
         public override async Task<ActionResult<IResponse<IReadOnlyList<GetWeatherForecastDto>>>> HandleAsync(
             CancellationToken cancellationToken = new())
         {
-            var result = await _mediator.Send(new GetWeatherForecastsQuery(),cancellationToken);
-            return result.Succeeded ? Ok(result) : BadRequest(result);
+            return Ok(await _mediator.Send(new GetWeatherForecastsQuery(), cancellationToken));
         }
     }
 }

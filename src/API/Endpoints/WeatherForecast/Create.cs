@@ -10,7 +10,6 @@ using Ardalis.ApiEndpoints;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace API.Endpoints.WeatherForecast
@@ -38,12 +37,10 @@ namespace API.Endpoints.WeatherForecast
             CancellationToken cancellationToken = new())
         {
             var result = await _mediator.Send(new CreateWeatherForecastCommand(request), cancellationToken);
-            return result.Succeeded
-                ? Created(
-                    new Uri(
-                        $"{Request.Scheme}://{Request.Host.ToString()}/{WeatherForecastRoutes.GetById}?id={result.Data}"),
-                    result)
-                : BadRequest(result);
+            return Created(
+                new Uri(
+                    $"{Request.Scheme}://{Request.Host.ToString()}/{WeatherForecastRoutes.GetById}?id={result.Data}"),
+                result);
         }
     }
 }

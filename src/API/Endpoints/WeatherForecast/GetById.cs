@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,10 +31,11 @@ namespace API.Endpoints.WeatherForecast
         [SwaggerResponse(StatusCodes.Status400BadRequest,"No Weather Forecast Were Found",typeof(IResponse<GetWeatherForecastDto>))]
         [Produces(MediaTypeNames.Application.Json)]
         [Consumes(MediaTypeNames.Application.Json)]
-        public override async Task<ActionResult<IResponse<GetWeatherForecastDto>>> HandleAsync([FromQuery,SwaggerParameter("Weather Forecast Id To Be Retrieved")]int id, CancellationToken cancellationToken = new())
+        public override async Task<ActionResult<IResponse<GetWeatherForecastDto>>> HandleAsync(
+            [FromQuery,SwaggerParameter("Weather Forecast Id To Be Retrieved")]int id,
+            CancellationToken cancellationToken = new())
         {
-            var result = await _mediator.Send(new GetWeatherForecastQuery(x => x.Id == id), cancellationToken);
-            return result.Succeeded ? Ok(result) : BadRequest(result);
+            return Ok(await _mediator.Send(new GetWeatherForecastQuery(x => x.Id == id), cancellationToken));
         }
     }
 }

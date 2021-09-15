@@ -34,8 +34,7 @@ namespace API.Endpoints.WeatherForecast
             [FromQuery,SwaggerParameter("Weather Forecast Id",Required = true)]int id,
             CancellationToken cancellationToken = new())
         {
-            var result = await _mediator.Send(new DeleteWeatherForecastCommand(id), cancellationToken);
-            return result.Succeeded ? Ok(result) : BadRequest(result);
+            return Ok(await _mediator.Send(new DeleteWeatherForecastCommand(id), cancellationToken));
         }
     }
 }
