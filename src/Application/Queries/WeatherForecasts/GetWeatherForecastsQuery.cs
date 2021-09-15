@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -7,6 +6,7 @@ using Application.Common.DTOs.WeatherForecast;
 using Application.Common.Interfaces;
 using Application.Common.Models;
 using Application.Common.Wrappers;
+using Domain.Exceptions.WeatherForecast;
 using Mapster;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
@@ -29,7 +29,7 @@ namespace Application.Queries.WeatherForecasts
                 .ProjectToType<GetWeatherForecastDto>()
                 .ToListAsync(cancellationToken);
             if (weatherForecasts.Any())
-                throw new Exception("Can't find any record");
+                throw new WeatherForecastNotFoundException();
             return Response.Success(weatherForecasts);
         }
     }

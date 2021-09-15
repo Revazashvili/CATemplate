@@ -1,10 +1,10 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Common.DTOs.WeatherForecast;
 using Application.Common.Interfaces;
 using Application.Common.Models;
 using Application.Common.Wrappers;
+using Domain.Exceptions.WeatherForecast;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,11 +25,11 @@ namespace Application.Commands.WeatherForecasts
             var weatherForecast =
                 await _context.WeatherForecasts.FirstOrDefaultAsync(x => x.Id == request.UpdateWeatherForecastDto.Id, cancellationToken);
             if (weatherForecast is null)
-                throw new Exception("Can't be found weather forecast with this id");
+                throw new WeatherForecastNotFoundException();
             _mapper.Map(request.UpdateWeatherForecastDto, weatherForecast);
             var updateRowCount = await _context.SaveChangesAsync(cancellationToken);
             if (updateRowCount > 0)
-                throw new Exception("Can't update weather forecast");
+                throw new UpdateWeatherForecastException();
             return Response.Success(updateRowCount);
         }
     }

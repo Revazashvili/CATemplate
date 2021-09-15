@@ -1,9 +1,9 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Common.Interfaces;
 using Application.Common.Models;
 using Application.Common.Wrappers;
+using Domain.Exceptions.WeatherForecast;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Commands.WeatherForecasts
@@ -23,12 +23,12 @@ namespace Application.Commands.WeatherForecasts
         {
             var weatherForecast = await _context.WeatherForecasts.FirstOrDefaultAsync(x => x.Id == request.Id,cancellationToken);
             if (weatherForecast is null)
-                throw new Exception("Can't find weather forecast with this id");
+                throw new WeatherForecastNotFoundException();
             _context.WeatherForecasts.Remove(weatherForecast);
             var deletedRowCount = await _context.SaveChangesAsync(cancellationToken);
             if (deletedRowCount > 0)
-                throw new Exception("Error Occurred While Deleting Weather Forecast");
-            return Response.Success<int>(deletedRowCount);
+                throw new DeleteWeatherForecastException();
+            return Response.Success(deletedRowCount);
         }
     }
 }

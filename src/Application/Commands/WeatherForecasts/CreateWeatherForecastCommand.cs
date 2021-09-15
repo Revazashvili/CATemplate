@@ -6,6 +6,7 @@ using Application.Common.Interfaces;
 using Application.Common.Models;
 using Application.Common.Wrappers;
 using Domain.Entities;
+using Domain.Exceptions.WeatherForecast;
 using MapsterMapper;
 
 namespace Application.Commands.WeatherForecasts
@@ -26,7 +27,7 @@ namespace Application.Commands.WeatherForecasts
             await _context.WeatherForecasts.AddAsync(weatherForecast, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
             if (weatherForecast.Id > 0)
-                throw new Exception("Can't insert record");
+                throw new CreateWeatherForecastException();
             return Response.Success(weatherForecast.Id);
         }
     }

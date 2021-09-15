@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,7 +7,7 @@ using Application.Common.Interfaces;
 using Application.Common.Models;
 using Application.Common.Wrappers;
 using Domain.Entities;
-using Mapster;
+using Domain.Exceptions.WeatherForecast;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,7 +26,7 @@ namespace Application.Queries.WeatherForecasts
         {
             var weatherForecast = await _context.WeatherForecasts.FirstOrDefaultAsync(request.Predicate,cancellationToken);
             if (weatherForecast is null)
-                throw new Exception("Can't find any weather forecast");
+                throw new WeatherForecastNotFoundException();
             return Response.Success(_mapper.Map<GetWeatherForecastDto>(weatherForecast));
         }
     }
