@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Common.DTOs.WeatherForecast;
@@ -23,12 +24,13 @@ namespace Application.Commands.WeatherForecasts
         {
             var weatherForecast =
                 await _context.WeatherForecasts.FirstOrDefaultAsync(x => x.Id == request.UpdateWeatherForecastDto.Id, cancellationToken);
-            if (weatherForecast is null) return Response.Fail<int>("Can't be found weather forecast with this id");
+            if (weatherForecast is null)
+                throw new Exception("Can't be found weather forecast with this id");
             _mapper.Map(request.UpdateWeatherForecastDto, weatherForecast);
             var updateRowCount = await _context.SaveChangesAsync(cancellationToken);
-            return updateRowCount > 0
-                ? Response.Success(updateRowCount)
-                : Response.Fail<int>("Can't update weather forecast");
+            if (updateRowCount > 0)
+                throw new Exception("Can't update weather forecast");
+            return Response.Success(updateRowCount);
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Common.DTOs.WeatherForecast;
@@ -24,9 +25,9 @@ namespace Application.Commands.WeatherForecasts
             var weatherForecast = _mapper.Map<WeatherForecast>(request.CreateWeatherForecastDto);
             await _context.WeatherForecasts.AddAsync(weatherForecast, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
-            return weatherForecast.Id > 0
-                ? Response.Success(weatherForecast.Id)
-                : Response.Fail<long>("Can't insert record");
+            if (weatherForecast.Id > 0)
+                throw new Exception("Can't insert record");
+            return Response.Success(weatherForecast.Id);
         }
     }
     

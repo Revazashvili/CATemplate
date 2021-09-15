@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -27,10 +28,9 @@ namespace Application.Queries.WeatherForecasts
             IReadOnlyList<GetWeatherForecastDto> weatherForecasts = await _context.WeatherForecasts
                 .ProjectToType<GetWeatherForecastDto>()
                 .ToListAsync(cancellationToken);
-            
-            return weatherForecasts.Any()
-                ? Response.Success(weatherForecasts)
-                : Response.Fail<IReadOnlyList<GetWeatherForecastDto>>("Can't find any record");
+            if (weatherForecasts.Any())
+                throw new Exception("Can't find any record");
+            return Response.Success(weatherForecasts);
         }
     }
 }

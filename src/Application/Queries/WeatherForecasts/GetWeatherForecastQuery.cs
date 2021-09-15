@@ -26,9 +26,9 @@ namespace Application.Queries.WeatherForecasts
         public async Task<IResponse<GetWeatherForecastDto>> Handle(GetWeatherForecastQuery request, CancellationToken cancellationToken)
         {
             var weatherForecast = await _context.WeatherForecasts.FirstOrDefaultAsync(request.Predicate,cancellationToken);
-            return weatherForecast is not null
-                ? Response.Success(_mapper.Map<GetWeatherForecastDto>(weatherForecast))
-                : Response.Fail<GetWeatherForecastDto>("Can't find any weather forecast");
+            if (weatherForecast is null)
+                throw new Exception("Can't find any weather forecast");
+            return Response.Success(_mapper.Map<GetWeatherForecastDto>(weatherForecast));
         }
     }
 }
