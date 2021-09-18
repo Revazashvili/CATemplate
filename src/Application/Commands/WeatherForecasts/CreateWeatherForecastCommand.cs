@@ -1,4 +1,3 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Common.DTOs.WeatherForecast;
@@ -7,6 +6,7 @@ using Application.Common.Models;
 using Application.Common.Wrappers;
 using Domain.Entities;
 using Domain.Exceptions.WeatherForecast;
+using Forbids;
 using MapsterMapper;
 
 namespace Application.Commands.WeatherForecasts
@@ -17,17 +17,21 @@ namespace Application.Commands.WeatherForecasts
     {
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IForbid _forbid;
 
-        public CreateWeatherForecastCommandHandler(IApplicationDbContext context, IMapper mapper) =>
-            (_context, _mapper) = (context, mapper);
+        public CreateWeatherForecastCommandHandler(IApplicationDbContext context, IMapper mapper,IForbid forbid)
+        {
+            _context = context;
+            _mapper = mapper;
+            _forbid = forbid;
+        }
 
         public async Task<IResponse<long>> Handle(CreateWeatherForecastCommand request, CancellationToken cancellationToken)
         {
             var weatherForecast = _mapper.Map<WeatherForecast>(request.CreateWeatherForecastDto);
             await _context.WeatherForecasts.AddAsync(weatherForecast, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
-            if (weatherForecast.Id > 0)
-                throw new CreateWeatherForecastException();
+            _forbid.LessThan(weatherForecast.Id, 1, new CreateWeatherForecastException());
             return Response.Success(weatherForecast.Id);
         }
     }

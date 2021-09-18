@@ -8,6 +8,7 @@ using Application.Common.Models;
 using Application.Common.Wrappers;
 using Domain.Entities;
 using Domain.Exceptions.WeatherForecast;
+using Forbids;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,14 +20,19 @@ namespace Application.Queries.WeatherForecasts
     {
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
-        public GetWeatherForecastQueryHandler(IApplicationDbContext context, IMapper mapper) =>
-            (_context, _mapper) = (context, mapper);
+        private readonly IForbid _forbid;
+
+        public GetWeatherForecastQueryHandler(IApplicationDbContext context, IMapper mapper,IForbid forbid)
+        {
+            _context = context;
+            _mapper = mapper;
+            _forbid = forbid;
+        }
 
         public async Task<IResponse<GetWeatherForecastDto>> Handle(GetWeatherForecastQuery request, CancellationToken cancellationToken)
         {
             var weatherForecast = await _context.WeatherForecasts.FirstOrDefaultAsync(request.Predicate,cancellationToken);
-            if (weatherForecast is null)
-                throw new WeatherForecastNotFoundException();
+            _forbid.Null(weatherForecast, new WeatherForecastNotFoundException());
             return Response.Success(_mapper.Map<GetWeatherForecastDto>(weatherForecast));
         }
     }

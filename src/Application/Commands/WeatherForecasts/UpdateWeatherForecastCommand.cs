@@ -5,6 +5,7 @@ using Application.Common.Interfaces;
 using Application.Common.Models;
 using Application.Common.Wrappers;
 using Domain.Exceptions.WeatherForecast;
+using Forbids;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,20 +17,23 @@ namespace Application.Commands.WeatherForecasts
     {
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IForbid _forbid;
 
-        public UpdateWeatherForecastCommandHandler(IApplicationDbContext context, IMapper mapper) =>
-            (_context, _mapper) = (context, mapper);
+        public UpdateWeatherForecastCommandHandler(IApplicationDbContext context, IMapper mapper,IForbid forbid)
+        {
+            _context = context;
+            _mapper = mapper;
+            _forbid = forbid;
+        }
         
         public async Task<IResponse<int>> Handle(UpdateWeatherForecastCommand request, CancellationToken cancellationToken)
         {
             var weatherForecast =
                 await _context.WeatherForecasts.FirstOrDefaultAsync(x => x.Id == request.UpdateWeatherForecastDto.Id, cancellationToken);
-            if (weatherForecast is null)
-                throw new WeatherForecastNotFoundException();
+            _forbid.Null(weatherForecast, new WeatherForecastNotFoundException());
             _mapper.Map(request.UpdateWeatherForecastDto, weatherForecast);
             var updateRowCount = await _context.SaveChangesAsync(cancellationToken);
-            if (updateRowCount > 0)
-                throw new UpdateWeatherForecastException();
+            _forbid.LessThan(updateRowCount, 1, new UpdateWeatherForecastException());
             return Response.Success(updateRowCount);
         }
     }
